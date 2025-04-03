@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Calculation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 200px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #ff8c00;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #e07b00;
+        }
+        p {
+            margin-top: 15px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Option Calculation</h2>
+        <input type="number" id="numberInput" step="any" placeholder="Enter Price" />
+        <br>
+        <button onclick="calculateValues()">Submit</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        function calculateValues() {
+            let num = parseFloat(document.getElementById("numberInput").value);
+            if (!isNaN(num)) {
+                let lowerBound = num - 10;
+                let upperBound = num + 18;
+                document.getElementById("result").innerText = `Stop Loss: ${lowerBound.toFixed(2)}, Target: ${upperBound.toFixed(2)}`;
+            } else {
+                document.getElementById("result").innerText = "Please enter a valid number.";
+            }
+        }
+    </script>
+</body>
+</html>
