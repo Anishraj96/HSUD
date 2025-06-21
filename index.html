@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Employee ID Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 320px;
+    }
+
+    .card h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .output {
+      margin-top: 20px;
+      background: #e9f5ff;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>Employee Info</h2>
+    
+    <input type="text" id="name" placeholder="Enter Employee Name" />
+    
+    <select id="gender">
+      <option value="" disabled selected>Select Gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <button onclick="generateEmployeeID()">Generate ID</button>
+
+    <div class="output" id="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    function generateEmployeeID() {
+      const name = document.getElementById('name').value.trim();
+      const gender = document.getElementById('gender').value;
+      
+      if (!name || !gender) {
+        alert("Please enter name and select gender.");
+        return;
+      }
+
+      const empId = "EMP" + Math.floor(1000 + Math.random() * 9000); // 4-digit random ID
+      const result = `
+        <strong>Name:</strong> ${name}<br>
+        <strong>Gender:</strong> ${gender}<br>
+        <strong>Employee ID:</strong> ${empId}
+      `;
+
+      document.getElementById('result').innerHTML = result;
+      document.getElementById('result').style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
