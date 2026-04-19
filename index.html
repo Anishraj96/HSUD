@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dream11 GL AI Generator</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    textarea, select, button { padding: 10px; margin: 5px 0; width: 100%; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 10px; }
+    .card { border: 1px solid #ccc; padding: 10px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+
+<h1>Dream11 GL AI Generator</h1>
+
+<textarea id="input" rows="6" placeholder="Player Name, Role(WK/BAT/AR/BOWL), Team"></textarea>
+
+<select id="toss">
+  <option value="bat">Batting First</option>
+  <option value="chase">Chasing</option>
+</select>
+
+<select id="pitch">
+  <option value="balanced">Balanced Pitch</option>
+  <option value="spin">Spin Friendly</option>
+  <option value="pace">Pace Friendly</option>
+</select>
+
+<button onclick="generateTeams()">Generate GL Teams</button>
+
+<div id="output" class="grid"></div>
+
+<script>
+function parsePlayers(input) {
+  return input.split("\n").map(line => {
+    const [name, role, team] = line.split(",");
+    return { name: name?.trim(), role: role?.trim(), team: team?.trim() };
+  }).filter(p => p.name);
+}
+
+function getByRole(players, role) {
+  return players.filter(p => p.role === role);
+}
+
+function shuffle(arr) {
+  return [...arr].sort(() => 0.5 - Math.random());
+}
+
+function pickPlayers(list, count) {
+  return shuffle(list).slice(0, count);
+}
+
+function fillRemaining(team, allPlayers) {
+  let names = new Set(team.map(p => p.name));
+  let remaining = shuffle(allPlayers).filter(p => !names.has(p.name));
+
+  while (team.length < 11 && remaining.length > 0) {
+    team.push(remaining.pop());
+  }
+  return team;
+}
+
+function generateTeams() {
+  const input = document.getElementById("input").value;
+  const toss = document.getElementById("toss").value;
+  const pitch = document.getElementById("pitch").value;
+
+  const players = parsePlayers(input);
+  let output = document.getElementById("output");
+  output.innerHTML = "";
+
+  for (let i = 0; i < 6; i++) {
+    let wk = pickPlayers(getByRole(players, "WK"), 1);
+    let bat = pickPlayers(getByRole(players, "BAT"), 4);
+    let ar = pickPlayers(getByRole(players, "AR"), 2);
+    let bowl = pickPlayers(getByRole(players, "BOWL"), 4);
+
+    let team = [...wk, ...bat, ...ar, ...bowl];
+    team = fillRemaining(team, players);
+
+    if (toss === "bat") {
+      team.sort((a,b) => a.team.localeCompare(b.team));
+    }
+
+    if (pitch === "spin") {
+      team.sort((a,b) => (a.role === "BOWL" ? -1 : 1));
+    }
+
+    let shuffled = shuffle(team);
+    let captain = shuffled[0];
+    let vc = shuffled[1] || shuffled[0];
+
+    let div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `<h3>GL Team ${i+1}</h3>` +
+      team.map(p => `<div>${p.name} (${p.role})</div>`).join("") +
+      `<p><b>C:</b> ${captain.name}</p>` +
+      `<p><b>VC:</b> ${vc.name}</p>`;
+
+    output.appendChild(div);
+  }
+}
+</script>
+
+</body>
+</html>
