@@ -1,108 +1,200 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dream11 GL AI Generator</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    textarea, select, button { padding: 10px; margin: 5px 0; width: 100%; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 10px; }
-    .card { border: 1px solid #ccc; padding: 10px; border-radius: 8px; }
-  </style>
+<title>Dream11 GL AI PRO (Universal)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{background:#020617;color:#fff;font-family:Arial;padding:10px;}
+.container{max-width:1000px;margin:auto;}
+h2{text-align:center;color:#22c55e;}
+
+.card{
+background:#1e293b;
+padding:12px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+textarea{
+width:100%;height:100px;
+background:#020617;color:white;
+border:none;border-radius:8px;padding:8px;
+}
+
+input,button{
+width:100%;padding:10px;margin-top:5px;
+border-radius:8px;border:none;background:#020617;color:white;
+}
+
+button{background:#22c55e;font-weight:bold;}
+
+#out{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px;
+max-height:70vh;
+overflow-y:auto;
+}
+
+.team{
+background:#020617;
+padding:8px;
+border-radius:8px;
+font-size:12px;
+border:1px solid #1e293b;
+}
+
+.c{color:gold;}
+.vc{color:#38bdf8;}
+</style>
 </head>
+
 <body>
 
-<h1>Dream11 GL AI Generator</h1>
+<div class="container">
 
-<textarea id="input" rows="6" placeholder="Player Name, Role(WK/BAT/AR/BOWL), Team"></textarea>
+<h2>🏏 Dream11 GL AI PRO</h2>
 
-<select id="toss">
-  <option value="bat">Batting First</option>
-  <option value="chase">Chasing</option>
-</select>
+<div class="card">
+<b>TEAM A (use tags: wk/bat/ar/bowl)</b>
+<textarea id="teamA"></textarea>
+</div>
 
-<select id="pitch">
-  <option value="balanced">Balanced Pitch</option>
-  <option value="spin">Spin Friendly</option>
-  <option value="pace">Pace Friendly</option>
-</select>
+<div class="card">
+<b>TEAM B (use tags: wk/bat/ar/bowl)</b>
+<textarea id="teamB"></textarea>
+</div>
 
-<button onclick="generateTeams()">Generate GL Teams</button>
+<div class="card">
+<label>No. Teams</label>
+<input type="number" id="teams" value="5">
+</div>
 
-<div id="output" class="grid"></div>
+<button onclick="generate()">🚀 Generate Teams</button>
+
+<div id="out"></div>
+
+</div>
 
 <script>
-function parsePlayers(input) {
-  return input.split("\n").map(line => {
-    const [name, role, team] = line.split(",");
-    return { name: name?.trim(), role: role?.trim(), team: team?.trim() };
-  }).filter(p => p.name);
+
+// 🔥 DYNAMIC ROLE DETECTION (FINAL)
+function getRole(name){
+
+let n=name.toLowerCase();
+
+// PRIORITY → USER TAG
+if(n.includes("(wk)")) return "WK";
+if(n.includes("(bat)")) return "BAT";
+if(n.includes("(ar)")) return "AR";
+if(n.includes("(bowl)")) return "BOWL";
+
+// SMART FALLBACK
+if(n.includes("keeper")) return "WK";
+if(n.includes("allround")) return "AR";
+if(n.includes("bowler")) return "BOWL";
+
+return "BAT";
 }
 
-function getByRole(players, role) {
-  return players.filter(p => p.role === role);
+// PARSE
+function parse(text,team){
+return text.split(",")
+.map(x=>x.trim())
+.filter(x=>x)
+.map(x=>({
+name:x,
+team:team,
+role:getRole(x)
+}));
 }
 
-function shuffle(arr) {
-  return [...arr].sort(() => 0.5 - Math.random());
+// VALIDATE (DREAM11 RULES)
+function validate(team){
+
+let A=team.filter(p=>p.team==="A").length;
+let B=team.filter(p=>p.team==="B").length;
+
+if(A>7 || B>7) return false;
+
+let wk=team.filter(p=>p.role==="WK").length;
+let bat=team.filter(p=>p.role==="BAT").length;
+let ar=team.filter(p=>p.role==="AR").length;
+let bowl=team.filter(p=>p.role==="BOWL").length;
+
+if(wk<1 || bat<3 || ar<1 || bowl<3) return false;
+
+return true;
 }
 
-function pickPlayers(list, count) {
-  return shuffle(list).slice(0, count);
+// MAIN GENERATE
+function generate(){
+
+let A=parse(teamA.value,"A");
+let B=parse(teamB.value,"B");
+
+if(!A.length || !B.length){
+alert("Enter both teams");
+return;
 }
 
-function fillRemaining(team, allPlayers) {
-  let names = new Set(team.map(p => p.name));
-  let remaining = shuffle(allPlayers).filter(p => !names.has(p.name));
+let all=[...A,...B];
+let total=parseInt(teams.value);
+let out="";
 
-  while (team.length < 11 && remaining.length > 0) {
-    team.push(remaining.pop());
-  }
-  return team;
+for(let t=1;t<=total;t++){
+
+let attempts=0;
+let success=false;
+
+while(attempts<80){
+
+attempts++;
+
+let team=[];
+let used=new Set();
+
+// BUILD TEAM
+while(team.length<11){
+let p=all[Math.floor(Math.random()*all.length)];
+if(!used.has(p.name)){
+used.add(p.name);
+team.push(p);
+}
 }
 
-function generateTeams() {
-  const input = document.getElementById("input").value;
-  const toss = document.getElementById("toss").value;
-  const pitch = document.getElementById("pitch").value;
+// VALIDATE
+if(!validate(team)) continue;
 
-  const players = parsePlayers(input);
-  let output = document.getElementById("output");
-  output.innerHTML = "";
+// CAPTAIN / VC
+let c=team[Math.floor(Math.random()*team.length)];
+let vc=team.find(p=>p.name!==c.name);
 
-  for (let i = 0; i < 10; i++) {
-    let wk = pickPlayers(getByRole(players, "WK"), 1);
-    let bat = pickPlayers(getByRole(players, "BAT"), 4);
-    let ar = pickPlayers(getByRole(players, "AR"), 2);
-    let bowl = pickPlayers(getByRole(players, "BOWL"), 4);
+out+=`<div class="team"><b>Team ${t}</b>`;
 
-    let team = [...wk, ...bat, ...ar, ...bowl];
-    team = fillRemaining(team, players);
+team.forEach(p=>{
+let tag="";
+if(p.name===c.name) tag=` <span class="c">(C)</span>`;
+else if(p.name===vc.name) tag=` <span class="vc">(VC)</span>`;
 
-    if (toss === "bat") {
-      team.sort((a,b) => a.team.localeCompare(b.team));
-    }
+out+=`<div>${p.name} [${p.team}-${p.role}] ${tag}</div>`;
+});
 
-    if (pitch === "spin") {
-      team.sort((a,b) => (a.role === "BOWL" ? -1 : 1));
-    }
-
-    let shuffled = shuffle(team);
-    let captain = shuffled[0];
-    let vc = shuffled[1] || shuffled[0];
-
-    let div = document.createElement("div");
-    div.className = "card";
-
-    div.innerHTML = `<h3>GL Team ${i+1}</h3>` +
-      team.map(p => `<div>${p.name} (${p.role})</div>`).join("") +
-      `<p><b>C:</b> ${captain.name}</p>` +
-      `<p><b>VC:</b> ${vc.name}</p>`;
-
-    output.appendChild(div);
-  }
+out+=`</div>`;
+success=true;
+break;
 }
+
+if(!success){
+out+=`<div class="team">⚠️ Team ${t} failed</div>`;
+}
+
+}
+
+document.getElementById("out").innerHTML=out;
+}
+
 </script>
 
 </body>
