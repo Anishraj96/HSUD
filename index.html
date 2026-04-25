@@ -1,201 +1,165 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Dream11 GL AI PRO (Universal)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{background:#020617;color:#fff;font-family:Arial;padding:10px;}
-.container{max-width:1000px;margin:auto;}
-h2{text-align:center;color:#22c55e;}
-
-.card{
-background:#1e293b;
-padding:12px;
-border-radius:10px;
-margin-bottom:10px;
-}
-
-textarea{
-width:100%;height:100px;
-background:#020617;color:white;
-border:none;border-radius:8px;padding:8px;
-}
-
-input,button{
-width:100%;padding:10px;margin-top:5px;
-border-radius:8px;border:none;background:#020617;color:white;
-}
-
-button{background:#22c55e;font-weight:bold;}
-
-#out{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
-max-height:70vh;
-overflow-y:auto;
-}
-
-.team{
-background:#020617;
-padding:8px;
-border-radius:8px;
-font-size:12px;
-border:1px solid #1e293b;
-}
-
-.c{color:gold;}
-.vc{color:#38bdf8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#020617;color:#fff;font-family:Arial,sans-serif;padding:10px;}
+h2{text-align:center;color:#22c55e;font-size:18px;margin-bottom:12px;font-weight:500;}
+.card{background:#1e293b;padding:12px;border-radius:10px;margin-bottom:10px;}
+.card b{display:block;margin-bottom:6px;font-size:13px;}
+textarea{width:100%;height:90px;background:#020617;color:#fff;border:1px solid #334155;border-radius:8px;padding:8px;font-size:12px;resize:vertical;}
+input[type=number]{width:100%;padding:10px;margin-top:5px;border-radius:8px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px;}
+.gen-btn{width:100%;padding:12px;margin-top:8px;border-radius:8px;border:none;background:#22c55e;color:#000;font-weight:bold;font-size:15px;cursor:pointer;}
+.gen-btn:hover{background:#16a34a;}
+#out{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-height:72vh;overflow-y:auto;margin-top:12px;}
+.team{background:#020617;padding:8px;border-radius:8px;font-size:11px;border:1px solid #1e293b;}
+.team .th{font-weight:bold;color:#22c55e;margin-bottom:5px;font-size:12px;}
+.prow{padding:2px 0;display:flex;justify-content:space-between;align-items:center;}
+.pname{flex:1;}
+.ptag{font-size:10px;color:#64748b;}
+.c-tag{color:gold;font-weight:bold;}
+.vc-tag{color:#38bdf8;font-weight:bold;}
+.warn{color:#f59e0b;font-size:12px;}
+@media(max-width:700px){#out{grid-template-columns:repeat(2,1fr);}}
 </style>
-</head>
-
-<body>
-
-<div class="container">
-
+<div style="max-width:1000px;margin:auto;">
 <h2>🏏 Dream11 GL AI PRO</h2>
-
-<div class="card">
-<b>TEAM A (use tags: wk/bat/ar/bowl)</b>
-<textarea id="teamA"></textarea>
-</div>
-
-<div class="card">
-<b>TEAM B (use tags: wk/bat/ar/bowl)</b>
-<textarea id="teamB"></textarea>
-</div>
-
-<div class="card">
-<label>No. Teams</label>
-<input type="number" id="teams" value="5">
-</div>
-
-<button onclick="generate()">🚀 Generate Teams</button>
-
+<div class="card"><b>TEAM A (use tags: wk/bat/ar/bowl)</b><textarea id="teamA" placeholder="e.g. Rohit(bat), Bumrah(bowl), Jadeja(ar), Pant(wk), ..."></textarea></div>
+<div class="card"><b>TEAM B (use tags: wk/bat/ar/bowl)</b><textarea id="teamB" placeholder="e.g. Root(bat), Anderson(bowl), Stokes(ar), Foakes(wk), ..."></textarea></div>
+<div class="card"><b>No. of Teams</b><input type="number" id="teams" value="5" min="1" max="50"></div>
+<button class="gen-btn" onclick="generate()">🚀 Generate Teams</button>
 <div id="out"></div>
-
 </div>
-
 <script>
-
-// 🔥 DYNAMIC ROLE DETECTION (FINAL)
 function getRole(name){
-
-let n=name.toLowerCase();
-
-// PRIORITY → USER TAG
-if(n.includes("(wk)")) return "WK";
-if(n.includes("(bat)")) return "BAT";
-if(n.includes("(ar)")) return "AR";
-if(n.includes("(bowl)")) return "BOWL";
-
-// SMART FALLBACK
-if(n.includes("keeper")) return "WK";
-if(n.includes("allround")) return "AR";
-if(n.includes("bowler")) return "BOWL";
-
-return "BAT";
+  let n=name.toLowerCase();
+  if(n.includes("(wk)")) return "WK";
+  if(n.includes("(bat)")) return "BAT";
+  if(n.includes("(ar)")) return "AR";
+  if(n.includes("(bowl)")) return "BOWL";
+  if(n.includes("keeper")) return "WK";
+  if(n.includes("allround")) return "AR";
+  if(n.includes("bowler")) return "BOWL";
+  return "BAT";
 }
-
-// PARSE
 function parse(text,team){
-return text.split(",")
-.map(x=>x.trim())
-.filter(x=>x)
-.map(x=>({
-name:x,
-team:team,
-role:getRole(x)
-}));
+  return text.split(",").map(x=>x.trim()).filter(x=>x).map(x=>({name:x,team:team,role:getRole(x)}));
 }
 
-// VALIDATE (DREAM11 RULES)
-function validate(team){
-
-let A=team.filter(p=>p.team==="A").length;
-let B=team.filter(p=>p.team==="B").length;
-
-if(A>7 || B>7) return false;
-
-let wk=team.filter(p=>p.role==="WK").length;
-let bat=team.filter(p=>p.role==="BAT").length;
-let ar=team.filter(p=>p.role==="AR").length;
-let bowl=team.filter(p=>p.role==="BOWL").length;
-
-if(wk<1 || bat<3 || ar<1 || bowl<3) return false;
-
-return true;
+// Weighted random pick from array
+function weightedPick(arr,weights){
+  let total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total,cum=0;
+  for(let i=0;i<arr.length;i++){cum+=weights[i];if(r<cum)return arr[i];}
+  return arr[arr.length-1];
 }
 
-// MAIN GENERATE
+// Role weights for C/VC preference (AR best, then BAT, then WK, then BOWL)
+const roleWeight={AR:4,BAT:3,WK:2,BOWL:1};
+
+function buildTeam(all){
+  // Smart selection: ensure role quotas first, then fill randomly
+  // Role minimum: WK=1, BAT=3, AR=1, BOWL=3 | max 7 per team
+  let roles={WK:[],BAT:[],AR:[],BOWL:[]};
+  all.forEach(p=>roles[p.role].push(p));
+
+  // Shuffle each role pool
+  Object.keys(roles).forEach(r=>roles[r].sort(()=>Math.random()-0.5));
+
+  let team=[];
+  let usedNames=new Set();
+
+  function addFromRole(role,count){
+    let pool=roles[role].filter(p=>!usedNames.has(p.name));
+    let added=0;
+    for(let i=0;i<pool.length&&added<count;i++){
+      team.push(pool[i]);
+      usedNames.add(pool[i].name);
+      added++;
+    }
+    return added===count;
+  }
+
+  // Fill minimums
+  if(!addFromRole("WK",1)) return null;
+  if(!addFromRole("BAT",3)) return null;
+  if(!addFromRole("AR",1)) return null;
+  if(!addFromRole("BOWL",3)) return null;
+
+  // Fill remaining 3 slots randomly from remaining players, with role-balance weights
+  let remaining=all.filter(p=>!usedNames.has(p.name));
+  // Weight: prefer AR > BAT > WK > BOWL to balance
+  let roleFillWeight={AR:4,BAT:3,WK:2,BOWL:2};
+  // Count current roles
+  let attempts=0;
+  while(team.length<11&&remaining.length>0&&attempts<200){
+    attempts++;
+    let weights=remaining.map(p=>roleFillWeight[p.role]||1);
+    let pick=weightedPick(remaining,weights);
+    // Team balance check (max 7 per team)
+    let tA=team.filter(p=>p.team==="A").length+(pick.team==="A"?1:0);
+    let tB=team.filter(p=>p.team==="B").length+(pick.team==="B"?1:0);
+    if(tA>7||tB>7){remaining=remaining.filter(p=>p.name!==pick.name);continue;}
+    team.push(pick);
+    usedNames.add(pick.name);
+    remaining=remaining.filter(p=>p.name!==pick.name);
+  }
+
+  if(team.length!==11) return null;
+
+  // Final team balance check
+  let tA=team.filter(p=>p.team==="A").length;
+  let tB=team.filter(p=>p.team==="B").length;
+  if(tA>7||tB>7) return null;
+
+  return team;
+}
+
+function pickCVC(team){
+  // Weight players by role for C/VC: AR > BAT > WK > BOWL
+  let weights=team.map(p=>roleWeight[p.role]||1);
+  // Pick C
+  let cIdx=-1;
+  let totalW=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*totalW,cum=0;
+  for(let i=0;i<team.length;i++){cum+=weights[i];if(r<cum){cIdx=i;break;}}
+  if(cIdx<0) cIdx=0;
+
+  // Pick VC from remaining
+  let vcWeights=weights.map((w,i)=>i===cIdx?0:w);
+  let totalV=vcWeights.reduce((a,b)=>a+b,0);
+  let r2=Math.random()*totalV,cum2=0;
+  let vcIdx=-1;
+  for(let i=0;i<team.length;i++){cum2+=vcWeights[i];if(r2<cum2){vcIdx=i;break;}}
+  if(vcIdx<0) vcIdx=(cIdx+1)%team.length;
+
+  return{cIdx,vcIdx};
+}
+
 function generate(){
+  let A=parse(document.getElementById("teamA").value,"A");
+  let B=parse(document.getElementById("teamB").value,"B");
+  if(!A.length||!B.length){alert("Enter both teams");return;}
+  let all=[...A,...B];
+  let total=parseInt(document.getElementById("teams").value)||5;
+  let out="";
 
-let A=parse(teamA.value,"A");
-let B=parse(teamB.value,"B");
+  for(let t=1;t<=total;t++){
+    let team=null;
+    for(let attempt=0;attempt<150;attempt++){
+      team=buildTeam(all);
+      if(team) break;
+    }
+    if(!team){out+=`<div class="team"><div class="warn">⚠️ Team ${t} failed — check player counts & roles</div></div>`;continue;}
 
-if(!A.length || !B.length){
-alert("Enter both teams");
-return;
+    let{cIdx,vcIdx}=pickCVC(team);
+    out+=`<div class="team"><div class="th">Team ${t}</div>`;
+    team.forEach((p,i)=>{
+      let tag="";
+      if(i===cIdx) tag=`<span class="c-tag">&nbsp;C</span>`;
+      else if(i===vcIdx) tag=`<span class="vc-tag">&nbsp;VC</span>`;
+      out+=`<div class="prow"><span class="pname">${p.name}</span><span class="ptag">${p.team}·${p.role}</span>${tag}</div>`;
+    });
+    out+=`</div>`;
+  }
+  document.getElementById("out").innerHTML=out;
 }
-
-let all=[...A,...B];
-let total=parseInt(teams.value);
-let out="";
-
-for(let t=1;t<=total;t++){
-
-let attempts=0;
-let success=false;
-
-while(attempts<80){
-
-attempts++;
-
-let team=[];
-let used=new Set();
-
-// BUILD TEAM
-while(team.length<11){
-let p=all[Math.floor(Math.random()*all.length)];
-if(!used.has(p.name)){
-used.add(p.name);
-team.push(p);
-}
-}
-
-// VALIDATE
-if(!validate(team)) continue;
-
-// CAPTAIN / VC
-let c=team[Math.floor(Math.random()*team.length)];
-let vc=team.find(p=>p.name!==c.name);
-
-out+=`<div class="team"><b>Team ${t}</b>`;
-
-team.forEach(p=>{
-let tag="";
-if(p.name===c.name) tag=` <span class="c">(C)</span>`;
-else if(p.name===vc.name) tag=` <span class="vc">(VC)</span>`;
-
-out+=`<div>${p.name} [${p.team}-${p.role}] ${tag}</div>`;
-});
-
-out+=`</div>`;
-success=true;
-break;
-}
-
-if(!success){
-out+=`<div class="team">⚠️ Team ${t} failed</div>`;
-}
-
-}
-
-document.getElementById("out").innerHTML=out;
-}
-
 </script>
-
-</body>
-</html>
