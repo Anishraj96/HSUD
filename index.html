@@ -1,165 +1,328 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:#020617;color:#fff;font-family:Arial,sans-serif;padding:10px;}
-h2{text-align:center;color:#22c55e;font-size:18px;margin-bottom:12px;font-weight:500;}
-.card{background:#1e293b;padding:12px;border-radius:10px;margin-bottom:10px;}
-.card b{display:block;margin-bottom:6px;font-size:13px;}
-textarea{width:100%;height:90px;background:#020617;color:#fff;border:1px solid #334155;border-radius:8px;padding:8px;font-size:12px;resize:vertical;}
-input[type=number]{width:100%;padding:10px;margin-top:5px;border-radius:8px;border:1px solid #334155;background:#020617;color:#fff;font-size:14px;}
-.gen-btn{width:100%;padding:12px;margin-top:8px;border-radius:8px;border:none;background:#22c55e;color:#000;font-weight:bold;font-size:15px;cursor:pointer;}
+.wrap{padding:1rem 0;font-family:var(--font-sans);}
+h2{font-size:18px;font-weight:500;color:var(--color-text-primary);text-align:center;margin-bottom:1rem;}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:12px;}
+label{font-size:13px;color:var(--color-text-secondary);display:block;margin-bottom:6px;}
+textarea{width:100%;height:90px;font-size:13px;resize:vertical;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px;color:var(--color-text-primary);}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+input[type=number],select{width:100%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px;color:var(--color-text-primary);font-size:14px;}
+.hint{font-size:11px;color:var(--color-text-secondary);margin-top:4px;}
+.toss-section{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.toss-label{font-size:13px;color:var(--color-text-secondary);white-space:nowrap;}
+.toss-btn{padding:6px 14px;font-size:13px;font-weight:500;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-secondary);color:var(--color-text-primary);transition:background 0.15s;}
+.toss-btn:hover{background:var(--color-background-primary);}
+.toss-btn.active{background:#22c55e;color:#fff;border-color:#22c55e;}
+.toss-result{font-size:13px;font-weight:500;padding:6px 12px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-primary);display:none;}
+.toss-result.show{display:inline-block;}
+.gen-btn{width:100%;padding:10px;background:#22c55e;color:#fff;font-weight:500;font-size:14px;border:none;border-radius:var(--border-radius-md);cursor:pointer;margin-top:4px;}
 .gen-btn:hover{background:#16a34a;}
-#out{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-height:72vh;overflow-y:auto;margin-top:12px;}
-.team{background:#020617;padding:8px;border-radius:8px;font-size:11px;border:1px solid #1e293b;}
-.team .th{font-weight:bold;color:#22c55e;margin-bottom:5px;font-size:12px;}
-.prow{padding:2px 0;display:flex;justify-content:space-between;align-items:center;}
-.pname{flex:1;}
-.ptag{font-size:10px;color:#64748b;}
-.c-tag{color:gold;font-weight:bold;}
-.vc-tag{color:#38bdf8;font-weight:bold;}
-.warn{color:#f59e0b;font-size:12px;}
-@media(max-width:700px){#out{grid-template-columns:repeat(2,1fr);}}
+.gen-btn:disabled{background:#6b7280;cursor:not-allowed;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px;text-align:center;}
+.stat-val{font-size:20px;font-weight:500;color:var(--color-text-primary);}
+.stat-lbl{font-size:11px;color:var(--color-text-secondary);margin-top:2px;}
+.info-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--color-text-secondary);line-height:1.9;}
+.info-box b{color:var(--color-text-primary);}
+.toss-badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-left:6px;}
+.tb-bat{background:#dbeafe;color:#1e40af;}
+.tb-field{background:#dcfce7;color:#166534;}
+.teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;}
+.team-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:10px;font-size:12px;}
+.team-hdr{font-weight:500;font-size:13px;color:var(--color-text-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:6px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:4px;}
+.cv-line{font-size:10px;color:var(--color-text-secondary);padding-bottom:4px;margin-bottom:4px;border-bottom:0.5px dashed var(--color-border-tertiary);}
+.cv-line span{color:var(--color-text-primary);font-weight:500;}
+.split-pill{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;flex-shrink:0;}
+.sp-low{background:#ede9fe;color:#5b21b6;}
+.sp-mid1{background:#dbeafe;color:#1e40af;}
+.sp-mid2{background:#dcfce7;color:#166534;}
+.sp-high{background:#fef3c7;color:#92400e;}
+.player-row{display:flex;align-items:center;gap:4px;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.player-row:last-child{border-bottom:none;}
+.player-row.is-c{background:rgba(245,158,11,0.08);border-radius:4px;}
+.player-row.is-vc{background:rgba(56,189,248,0.08);border-radius:4px;}
+.role-tag{font-size:10px;padding:1px 5px;border-radius:4px;font-weight:500;flex-shrink:0;}
+.tag-wk{background:#fef3c7;color:#92400e;}
+.tag-bat{background:#dbeafe;color:#1e40af;}
+.tag-ar{background:#ede9fe;color:#5b21b6;}
+.tag-bowl{background:#dcfce7;color:#166534;}
+.c-badge{color:#f59e0b;font-weight:700;font-size:11px;flex-shrink:0;}
+.vc-badge{color:#38bdf8;font-weight:700;font-size:11px;flex-shrink:0;}
+.pname{color:var(--color-text-primary);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.team-badge{font-size:10px;color:var(--color-text-secondary);flex-shrink:0;}
+.toss-indicator{font-size:10px;margin-left:2px;}
+.err{color:var(--color-text-danger);font-size:13px;text-align:center;padding:1rem;}
+.warn{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);color:var(--color-text-warning);font-size:12px;padding:8px;border-radius:var(--border-radius-md);margin-bottom:8px;}
 </style>
-<div style="max-width:1000px;margin:auto;">
-<h2>🏏 Dream11 GL AI PRO</h2>
-<div class="card"><b>TEAM A (use tags: wk/bat/ar/bowl)</b><textarea id="teamA" placeholder="e.g. Rohit(bat), Bumrah(bowl), Jadeja(ar), Pant(wk), ..."></textarea></div>
-<div class="card"><b>TEAM B (use tags: wk/bat/ar/bowl)</b><textarea id="teamB" placeholder="e.g. Root(bat), Anderson(bowl), Stokes(ar), Foakes(wk), ..."></textarea></div>
-<div class="card"><b>No. of Teams</b><input type="number" id="teams" value="5" min="1" max="50"></div>
-<button class="gen-btn" onclick="generate()">🚀 Generate Teams</button>
+
+<div class="wrap">
+<h2>Dream11 GL AI Pro</h2>
+
+<div class="card">
+  <div class="row">
+    <div>
+      <label id="labelA">Team A players</label>
+      <textarea id="teamA" placeholder="Rohit(wk), Kohli(bat), Jadeja(ar), Bumrah(bowl)..."></textarea>
+      <div class="hint">Tags: (wk) (bat) (ar) (bowl)</div>
+    </div>
+    <div>
+      <label id="labelB">Team B players</label>
+      <textarea id="teamB" placeholder="Warner(bat), Maxwell(ar), Starc(bowl), Inglis(wk)..."></textarea>
+      <div class="hint">Tags: (wk) (bat) (ar) (bowl)</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <label style="margin-bottom:8px;">Toss result</label>
+  <div class="toss-section">
+    <span class="toss-label">Toss winner:</span>
+    <button class="toss-btn" id="tossA" onclick="setToss('A','bat')">Team A bats</button>
+    <button class="toss-btn" id="tossAbowl" onclick="setToss('A','field')">Team A fields</button>
+    <button class="toss-btn" id="tossBbat" onclick="setToss('B','bat')">Team B bats</button>
+    <button class="toss-btn" id="tossBfield" onclick="setToss('B','field')">Team B fields</button>
+    <button class="toss-btn" onclick="randomToss()" style="border-style:dashed;">🎲 Random</button>
+    <span class="toss-result" id="tossResult"></span>
+  </div>
+  <div class="row">
+    <div>
+      <label>Number of teams</label>
+      <input type="number" id="numTeams" value="10" min="1" max="50">
+    </div>
+    <div>
+      <label>Max from one side (4–8)</label>
+      <input type="number" id="maxPerSide" value="7" min="4" max="8">
+    </div>
+  </div>
+</div>
+
+<button class="gen-btn" id="genBtn" onclick="generate()">Generate Teams</button>
 <div id="out"></div>
 </div>
+
 <script>
-function getRole(name){
-  let n=name.toLowerCase();
-  if(n.includes("(wk)")) return "WK";
-  if(n.includes("(bat)")) return "BAT";
-  if(n.includes("(ar)")) return "AR";
-  if(n.includes("(bowl)")) return "BOWL";
-  if(n.includes("keeper")) return "WK";
-  if(n.includes("allround")) return "AR";
-  if(n.includes("bowler")) return "BOWL";
-  return "BAT";
+let tossWinner=null,tossChoice=null;
+
+function setToss(team,choice){
+  tossWinner=team;tossChoice=choice;
+  ['tossA','tossAbowl','tossBbat','tossBfield'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  let idMap={A:{bat:'tossA',field:'tossAbowl'},B:{bat:'tossBbat',field:'tossBfield'}};
+  document.getElementById(idMap[team][choice]).classList.add('active');
+  let res=document.getElementById('tossResult');
+  let batting=choice==='bat'?team:(team==='A'?'B':'A');
+  res.textContent=`Team ${team} won toss · Team ${batting} bats`;
+  res.classList.add('show');
 }
+
+function randomToss(){
+  let t=Math.random()<0.5?'A':'B';
+  let c=Math.random()<0.5?'bat':'field';
+  setToss(t,c);
+}
+
+function getRole(raw){
+  let n=raw.toLowerCase();
+  if(n.includes("(wk)"))return"WK";
+  if(n.includes("(bat)"))return"BAT";
+  if(n.includes("(ar)"))return"AR";
+  if(n.includes("(bowl)"))return"BOWL";
+  if(n.includes("wk")||n.includes("keeper"))return"WK";
+  if(n.includes("bowl"))return"BOWL";
+  if(n.includes("allround")||n.includes("all-round"))return"AR";
+  return"BAT";
+}
+function cleanName(raw){return raw.replace(/\((wk|bat|ar|bowl)\)/gi,"").replace(/\s+/g," ").trim();}
 function parse(text,team){
-  return text.split(",").map(x=>x.trim()).filter(x=>x).map(x=>({name:x,team:team,role:getRole(x)}));
+  return text.split(",").map(x=>x.trim()).filter(x=>x).map(x=>({name:cleanName(x),team,role:getRole(x),weight:Math.random()}));
 }
 
-// Weighted random pick from array
-function weightedPick(arr,weights){
-  let total=weights.reduce((a,b)=>a+b,0);
-  let r=Math.random()*total,cum=0;
-  for(let i=0;i<arr.length;i++){cum+=weights[i];if(r<cum)return arr[i];}
-  return arr[arr.length-1];
+function getSplitCombos(maxPerSide){
+  let max=Math.min(Math.max(parseInt(maxPerSide)||7,4),8);
+  let min=11-max;
+  let combos=[];
+  for(let a=min;a<=max;a++){let b=11-a;if(b>=min&&b<=max)combos.push([a,b]);}
+  if(!combos.length)combos.push([5,6],[6,5]);
+  return combos;
 }
 
-// Role weights for C/VC preference (AR best, then BAT, then WK, then BOWL)
-const roleWeight={AR:4,BAT:3,WK:2,BOWL:1};
+// Toss-weighted splits: batting team favored to have more players in higher-split combos
+function assignSplitsWithToss(n,maxPerSide,battingTeam){
+  let combos=getSplitCombos(maxPerSide);
+  // Assign weights to each combo — batting team gets more weight in high-A or high-B splits
+  let weighted=combos.map(([a,b])=>{
+    let w=1;
+    if(battingTeam==='A') w=a>b?3:a===b?1.5:0.8;
+    else if(battingTeam==='B') w=b>a?3:a===b?1.5:0.8;
+    return{combo:[a,b],w};
+  });
+  let total=weighted.reduce((s,x)=>s+x.w,0);
+  // Probability-weighted random picks
+  let result=[];
+  let safety=0;
+  while(result.length<n&&safety<500){
+    safety++;
+    let r=Math.random()*total,acc=0;
+    for(let{combo,w} of weighted){acc+=w;if(r<=acc){result.push(combo);break;}}
+  }
+  return result.slice(0,n);
+}
 
-function buildTeam(all){
-  // Smart selection: ensure role quotas first, then fill randomly
-  // Role minimum: WK=1, BAT=3, AR=1, BOWL=3 | max 7 per team
-  let roles={WK:[],BAT:[],AR:[],BOWL:[]};
-  all.forEach(p=>roles[p.role].push(p));
+function wshuffle(arr){
+  return arr.map(p=>({...p,_s:Math.random()*0.55+p.weight*0.45})).sort((a,b)=>b._s-a._s);
+}
 
-  // Shuffle each role pool
-  Object.keys(roles).forEach(r=>roles[r].sort(()=>Math.random()-0.5));
+function validateSplit(team,tA,tB){
+  if(team.filter(p=>p.team==="A").length!==tA)return false;
+  if(team.filter(p=>p.team==="B").length!==tB)return false;
+  let wk=team.filter(p=>p.role==="WK").length;
+  let bat=team.filter(p=>p.role==="BAT").length;
+  let ar=team.filter(p=>p.role==="AR").length;
+  let bowl=team.filter(p=>p.role==="BOWL").length;
+  return wk>=1&&bat>=3&&ar>=1&&bowl>=3&&wk<=4&&bat<=6&&ar<=4&&bowl<=6;
+}
 
-  let team=[];
-  let usedNames=new Set();
-
-  function addFromRole(role,count){
-    let pool=roles[role].filter(p=>!usedNames.has(p.name));
-    let added=0;
-    for(let i=0;i<pool.length&&added<count;i++){
-      team.push(pool[i]);
-      usedNames.add(pool[i].name);
-      added++;
+function buildTeam(allA,allB,tA,tB,usedCombos){
+  for(let att=0;att<300;att++){
+    let sA=wshuffle(allA),sB=wshuffle(allB),both=wshuffle([...allA,...allB]);
+    let team=[],used=new Set(),ok=true;
+    for(let req of [{r:"WK",m:1},{r:"BAT",m:3},{r:"AR",m:1},{r:"BOWL",m:3}]){
+      let cands=both.filter(p=>p.role===req.r&&!used.has(p.name));
+      let need=req.m;
+      for(let p of cands){if(!need)break;team.push(p);used.add(p.name);need--;}
+      if(need){ok=false;break;}
     }
-    return added===count;
+    if(!ok)continue;
+    let curA=team.filter(p=>p.team==="A").length,curB=team.filter(p=>p.team==="B").length;
+    let remA=tA-curA,remB=tB-curB;
+    if(remA<0||remB<0)continue;
+    for(let p of sA){if(!remA)break;if(!used.has(p.name)){team.push(p);used.add(p.name);remA--;}}
+    for(let p of sB){if(!remB)break;if(!used.has(p.name)){team.push(p);used.add(p.name);remB--;}}
+    if(team.length!==11)continue;
+    if(!validateSplit(team,tA,tB))continue;
+    let key=team.map(p=>p.name).sort().join("|");
+    if(usedCombos.has(key))continue;
+    usedCombos.add(key);
+    return team;
   }
-
-  // Fill minimums
-  if(!addFromRole("WK",1)) return null;
-  if(!addFromRole("BAT",3)) return null;
-  if(!addFromRole("AR",1)) return null;
-  if(!addFromRole("BOWL",3)) return null;
-
-  // Fill remaining 3 slots randomly from remaining players, with role-balance weights
-  let remaining=all.filter(p=>!usedNames.has(p.name));
-  // Weight: prefer AR > BAT > WK > BOWL to balance
-  let roleFillWeight={AR:4,BAT:3,WK:2,BOWL:2};
-  // Count current roles
-  let attempts=0;
-  while(team.length<11&&remaining.length>0&&attempts<200){
-    attempts++;
-    let weights=remaining.map(p=>roleFillWeight[p.role]||1);
-    let pick=weightedPick(remaining,weights);
-    // Team balance check (max 7 per team)
-    let tA=team.filter(p=>p.team==="A").length+(pick.team==="A"?1:0);
-    let tB=team.filter(p=>p.team==="B").length+(pick.team==="B"?1:0);
-    if(tA>7||tB>7){remaining=remaining.filter(p=>p.name!==pick.name);continue;}
-    team.push(pick);
-    usedNames.add(pick.name);
-    remaining=remaining.filter(p=>p.name!==pick.name);
-  }
-
-  if(team.length!==11) return null;
-
-  // Final team balance check
-  let tA=team.filter(p=>p.team==="A").length;
-  let tB=team.filter(p=>p.team==="B").length;
-  if(tA>7||tB>7) return null;
-
-  return team;
+  return null;
 }
 
-function pickCVC(team){
-  // Weight players by role for C/VC: AR > BAT > WK > BOWL
-  let weights=team.map(p=>roleWeight[p.role]||1);
-  // Pick C
-  let cIdx=-1;
-  let totalW=weights.reduce((a,b)=>a+b,0);
-  let r=Math.random()*totalW,cum=0;
-  for(let i=0;i<team.length;i++){cum+=weights[i];if(r<cum){cIdx=i;break;}}
-  if(cIdx<0) cIdx=0;
+// Toss-aware C/VC selection: batting team players get a captain preference boost
+const roleW={AR:1.0,WK:0.85,BAT:0.7,BOWL:0.3};
+let cCount={},vcCount={};
 
-  // Pick VC from remaining
-  let vcWeights=weights.map((w,i)=>i===cIdx?0:w);
-  let totalV=vcWeights.reduce((a,b)=>a+b,0);
-  let r2=Math.random()*totalV,cum2=0;
-  let vcIdx=-1;
-  for(let i=0;i<team.length;i++){cum2+=vcWeights[i];if(r2<cum2){vcIdx=i;break;}}
-  if(vcIdx<0) vcIdx=(cIdx+1)%team.length;
+function pickCVC(team,battingTeam){
+  // Batting team players get lower base score (more likely to be picked C/VC)
+  let sc=team.map(p=>{
+    let tossBoost=(battingTeam&&p.team===battingTeam)?-0.6:0;
+    return{
+      ...p,
+      cs:(cCount[p.name]||0)*2+(vcCount[p.name]||0)-roleW[p.role]+tossBoost+Math.random()*1.8,
+      vs:(vcCount[p.name]||0)*2+(cCount[p.name]||0)*0.5-roleW[p.role]+tossBoost+Math.random()*1.8
+    };
+  });
+  sc.sort((a,b)=>a.cs-b.cs);
+  let c=sc[0];
+  let rest=sc.filter(p=>p.name!==c.name).sort((a,b)=>a.vs-b.vs);
+  let vc=rest[0];
+  cCount[c.name]=(cCount[c.name]||0)+1;
+  vcCount[vc.name]=(vcCount[vc.name]||0)+1;
+  return{c:c.name,vc:vc.name,cRole:c.role,vcRole:vc.role};
+}
 
-  return{cIdx,vcIdx};
+const roleTag={WK:'<span class="role-tag tag-wk">WK</span>',BAT:'<span class="role-tag tag-bat">BAT</span>',AR:'<span class="role-tag tag-ar">AR</span>',BOWL:'<span class="role-tag tag-bowl">BOWL</span>'};
+const roleOrder={WK:0,BAT:1,AR:2,BOWL:3};
+function pillClass(a,max){
+  let mid=Math.round((max+(11-max))/2);
+  if(a<=11-max)return"sp-low";
+  if(a<mid)return"sp-mid1";
+  if(a===mid)return"sp-mid2";
+  return"sp-high";
+}
+
+function getBattingTeam(){
+  if(!tossWinner||!tossChoice)return null;
+  if(tossChoice==='bat')return tossWinner;
+  return tossWinner==='A'?'B':'A';
 }
 
 function generate(){
+  let btn=document.getElementById("genBtn");
+  btn.disabled=true;btn.textContent="Generating...";
+  setTimeout(()=>{
+    try{_generate();}catch(e){document.getElementById("out").innerHTML='<div class="err">Error: '+e.message+'</div>';}
+    btn.disabled=false;btn.textContent="Generate Teams";
+  },30);
+}
+
+function _generate(){
+  cCount={};vcCount={};
   let A=parse(document.getElementById("teamA").value,"A");
   let B=parse(document.getElementById("teamB").value,"B");
-  if(!A.length||!B.length){alert("Enter both teams");return;}
-  let all=[...A,...B];
-  let total=parseInt(document.getElementById("teams").value)||5;
-  let out="";
+  let numTeams=Math.min(parseInt(document.getElementById("numTeams").value)||10,50);
+  let maxPerSide=Math.min(Math.max(parseInt(document.getElementById("maxPerSide").value)||7,4),8);
+  let battingTeam=getBattingTeam();
 
-  for(let t=1;t<=total;t++){
-    let team=null;
-    for(let attempt=0;attempt<150;attempt++){
-      team=buildTeam(all);
-      if(team) break;
+  if(A.length<5||B.length<5){document.getElementById("out").innerHTML='<div class="err">Enter at least 5 players per team.</div>';return;}
+  if(A.length+B.length<11){document.getElementById("out").innerHTML='<div class="err">Need at least 11 total players.</div>';return;}
+
+  let warn=A.length+B.length<15?'<div class="warn">Small player pool — add more players for better variety.</div>':"";
+  let splits=assignSplitsWithToss(numTeams,maxPerSide,battingTeam);
+  let usedCombos=new Set();
+  let results=[],splitMap={};
+
+  for(let i=0;i<splits.length;i++){
+    let[tA,tB]=splits[i];
+    let team=buildTeam(A,B,tA,tB,usedCombos);
+    if(team){
+      results.push({team,tA,tB});
+      let k=`A:${tA} B:${tB}`;splitMap[k]=(splitMap[k]||0)+1;
     }
-    if(!team){out+=`<div class="team"><div class="warn">⚠️ Team ${t} failed — check player counts & roles</div></div>`;continue;}
-
-    let{cIdx,vcIdx}=pickCVC(team);
-    out+=`<div class="team"><div class="th">Team ${t}</div>`;
-    team.forEach((p,i)=>{
-      let tag="";
-      if(i===cIdx) tag=`<span class="c-tag">&nbsp;C</span>`;
-      else if(i===vcIdx) tag=`<span class="vc-tag">&nbsp;VC</span>`;
-      out+=`<div class="prow"><span class="pname">${p.name}</span><span class="ptag">${p.team}·${p.role}</span>${tag}</div>`;
-    });
-    out+=`</div>`;
   }
-  document.getElementById("out").innerHTML=out;
+
+  if(!results.length){document.getElementById("out").innerHTML='<div class="err">Could not generate teams. Check roles and pool size.</div>';return;}
+
+  let cvList=results.map(r=>({...r,...pickCVC(r.team,battingTeam)}));
+
+  let distHtml=Object.entries(splitMap).sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>`<b>${k}</b>: ${v}`).join(" &nbsp;·&nbsp; ");
+  let cHtml=Object.entries(cCount).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<b>${n}</b>×${v}`).join(" · ");
+  let vcHtml=Object.entries(vcCount).sort((a,b)=>b[1]-a[1]).map(([n,v])=>`<b>${n}</b>×${v}`).join(" · ");
+
+  let tossBadge="";
+  if(battingTeam){
+    tossBadge=`<span class="toss-badge tb-bat">Team ${battingTeam} bats</span>`;
+  }
+
+  let html=`${warn}
+  <div style="margin-bottom:10px;font-size:12px;color:var(--color-text-secondary);">
+    ${battingTeam?`Toss active — Team ${battingTeam} batting. Captain/split picks are toss-weighted.${tossBadge}`:'No toss set — using balanced splits. Set toss above for smarter teams.'}
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-val">${results.length}</div><div class="stat-lbl">Teams</div></div>
+    <div class="stat"><div class="stat-val">${Object.keys(splitMap).length}</div><div class="stat-lbl">Unique splits</div></div>
+    <div class="stat"><div class="stat-val">${Object.keys(cCount).length}</div><div class="stat-lbl">Unique C</div></div>
+    <div class="stat"><div class="stat-val">${Object.keys(vcCount).length}</div><div class="stat-lbl">Unique VC</div></div>
+  </div>
+  <div class="info-box">Splits — ${distHtml}<br>C — ${cHtml}<br>VC — ${vcHtml}</div>
+  <div class="teams-grid">`;
+
+  cvList.forEach(({team,tA,tB,c,vc,cRole,vcRole},idx)=>{
+    let sorted=[...team].sort((a,b)=>roleOrder[a.role]-roleOrder[b.role]);
+    html+=`<div class="team-card">
+      <div class="team-hdr"><span>Team ${idx+1}</span><span class="split-pill ${pillClass(tA,maxPerSide)}">A:${tA} B:${tB}</span></div>
+      <div class="cv-line">C: <span>${c}</span> (${cRole}) · VC: <span>${vc}</span> (${vcRole})</div>`;
+    sorted.forEach(p=>{
+      let isC=p.name===c,isVC=p.name===vc;
+      let cls=isC?" is-c":isVC?" is-vc":"";
+      let badge=isC?'<span class="c-badge">C</span>':isVC?'<span class="vc-badge">VC</span>':"";
+      let batInd=(battingTeam&&p.team===battingTeam)?'<span class="toss-indicator" title="Batting team">🏏</span>':'';
+      html+=`<div class="player-row${cls}">${roleTag[p.role]}<span class="pname">${p.name}</span><span class="team-badge">${p.team}</span>${batInd}${badge}</div>`;
+    });
+    html+=`</div>`;
+  });
+
+  html+=`</div>`;
+  document.getElementById("out").innerHTML=html;
 }
 </script>
